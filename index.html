@@ -1,1 +1,72 @@
-foobar
+<!DOCTYPE html>
+<html>
+	<!-- js libraries -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js"></script>
+	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+	<script src="https://cdn.rawgit.com/uscensusbureau/citysdk/Release1.1/js/citysdk.js"></script>
+	<script src="https://cdn.rawgit.com/uscensusbureau/citysdk/Release1.1/js/citysdk.census.js"></script>
+	<script src="utilities.js"></script>
+
+	<!-- css -->
+	<link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="custom.css">
+
+	<!-- other -->
+	<link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+
+	<body>
+
+		<p id="loadbar" class="loading" style="display:none;"><i class="fa fa-spinner fa-pulse"></i> Loading</p>
+
+		<div id="prompt" class="container">
+			<section class="header">
+				<h2 class="title">SLC Explorer Tool</h2>
+				<input type="text" id="api_key" placeholder="Enter CitySDK API Key" style="width:250px;">
+				<input class="button-primary" type="submit" onclick="startTool()" value="Submit">
+			</section>
+		</div>
+
+		<div id="main" style="display:none;">
+			<div id="map1" class="map"></div>
+			<div id="controls" class="controls">
+				<b>Weight by variables  </b>
+
+				Dependent:
+				<select id="sel_dependent1">
+					<option disabled selected> -- select an option -- </option>
+				</select>
+
+				Correlation:
+				<select id="sel_dependent2">
+					<option disabled selected> -- select an option -- </option>
+				</select>
+			</div>
+		</div>
+
+
+	</body>
+	<script type="text/javascript">
+		// globals
+		var g = {};
+		g.slc = {
+			lat: 40.7500,
+			lng: -111.8833,
+			zips_all: ["84105", "84104", "84107", "84106", "84109", "84108", "84111", "84110", "84604", "92275", "83263", "84115", "84117", "84116", "84119", "84118", "84121", "84120", "84123", "84124", "84126", "84128", "84134", "84141", "84139", "84045", "84096", "00927", "84003", "84150", "84006", "84010", "84158", "84184", "84190", "84020", "84199", "84025", "84009", "84720", "84037", "84040", "84044", "84043", "84321", "06512", "84047", "84049", "84054", "84060", "84401", "84129", "84065", "84070", "84071", "84074", "84078", "84084", "84088", "84087", "84081", "84092", "84094", "84093", "84095", "84101", "84098", "84103", "84102"],
+			acs_vars: ["age", "commute_time", "commute_time_carpool", "commute_time_other", "commute_time_public_transport", "commute_time_solo_automobile", "commute_time_walked", "education_associates", "education_bachelors", "education_doctorate", "education_ged", "education_high_school", "education_masters", "education_none", "education_professional", "employment_armed_forces", "employment_civilian_labor_force", "employment_employed", "employment_female_architecture_and_engineering_occupations", "employment_female_arts_design_entertainment_sports_and_media_occupations", "employment_female_building_and_grounds_cleaning_and_maintenance_occupations", "employment_female_business_and_financial_operations_occupations", "employment_female_community_and_social_service_occupations", "employment_female_computer_and_mathematical_occupations", "employment_female_computer_engineering_and_science_occupations", "employment_female_construction_and_extraction_occupations", "employment_female_education_legal_community_service_arts_and_media_occupations", "employment_female_education_training_and_library_occupations", "employment_female_farming_fishing_and_forestry_occupations", "employment_female_fire_fighting_and_prevention_and_other_protective_service_workers_including_supervisors", "employment_female_food_preparation_and_serving_related_occupations", "employment_female_health_diagnosing_and_treating_practitioners_and_other_technical_occupations", "employment_female_health_technologists_and_technicians", "employment_female_healthcare_practitioners_and_technical_occupations", "employment_female_healthcare_support_occupations", "employment_female_installation_maintenance_and_repair_occupations", "employment_female_law_enforcement_workers_including_supervisors", "employment_female_legal_occupations", "employment_female_life_physical_and_social_science_occupations", "employment_female_management_business_and_financial_occupations", "employment_female_management_business_science_and_arts_occupations", "employment_female_management_occupations", "employment_female_material_moving_occupations", "employment_female_natural_resources_construction_and_maintenance_occupations", "employment_female_office_and_administrative_support_occupations", "employment_female_personal_care_and_service_occupations", "employment_female_production_occupations", "employment_female_production_transportation_and_material_moving_occupations", "employment_female_protective_service_occupations", "employment_female_sales_and_office_occupations", "employment_female_sales_and_related_occupations", "employment_female_service_occupations", "employment_female_transportation_occupations", "employment_labor_force", "employment_male_architecture_and_engineering_occupations", "employment_male_arts_design_entertainment_sports_and_media_occupations", "employment_male_building_and_grounds_cleaning_and_maintenance_occupations", "employment_male_business_and_financial_operations_occupations", "employment_male_community_and_social_service_occupations", "employment_male_computer_and_mathematical_occupations", "employment_male_computer_engineering_and_science_occupations", "employment_male_construction_and_extraction_occupations", "employment_male_education_legal_community_service_arts_and_media_occupations", "employment_male_education_training_and_library_occupations", "employment_male_farming_fishing_and_forestry_occupations", "employment_male_fire_fighting_and_prevention_and_other_protective_service_workers_including_supervisors", "employment_male_food_preparation_and_serving_related_occupations", "employment_male_health_diagnosing_and_treating_practitioners_and_other_technical_occupations", "employment_male_health_technologists_and_technicians", "employment_male_healthcare_practitioners_and_technical_occupations", "employment_male_healthcare_support_occupations", "employment_male_installation_maintenance_and_repair_occupations", "employment_male_law_enforcement_workers_including_supervisors", "employment_male_legal_occupations", "employment_male_life_physical_and_social_science_occupations", "employment_male_management_business_and_financial_occupations", "employment_male_management_business_science_and_arts_occupations", "employment_male_management_occupations", "employment_male_material_moving_occupations", "employment_male_natural_resources_construction_and_maintenance_occupations", "employment_male_office_and_administrative_support_occupations", "employment_male_personal_care_and_service_occupations", "employment_male_production_occupations", "employment_male_production_transportation_and_material_moving_occupations", "employment_male_protective_service_occupations", "employment_male_sales_and_office_occupations", "employment_male_sales_and_related_occupations", "employment_male_service_occupations", "employment_male_transportation_occupations", "employment_not_labor_force", "employment_unemployed", "income", "income_per_capita", "median_contract_rent", "median_female_age", "median_gross_rent", "median_home_value", "median_house_construction_year", "median_male_age", "population", "population_american_indian_alone", "population_asian_alone", "population_black_alone", "population_hispanic_origin", "population_native_hawaiian_alone", "population_other_alone", "population_two_or_more_races", "population_white_alone", "poverty", "poverty_asian_alone", "poverty_black_alone", "poverty_family", "poverty_family_married", "poverty_family_single_female", "poverty_family_single_male", "poverty_female", "poverty_hispanic_origin", "poverty_male", "poverty_native_hawaiian_alone", "poverty_other_alone", "poverty_two_or_more_races", "poverty_white_alone"]
+		};
+
+
+		// leaflet set up
+		$("#map1").height($(window).height());
+		var map = L.map("map1", {attributionControl:false}).setView([g.slc.lat, g.slc.lng], 11);
+		map.scrollWheelZoom.disable();
+		setUpTiles(map);
+		loadInVariables();
+
+
+
+
+	</script>
+</html>
