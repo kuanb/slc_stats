@@ -150,15 +150,16 @@ function runWeight () {
 				console.log(response);
 
 				var tracks_have = [],
-						res_vals = [];
+						res_vals = [],
+						res_dic = {};
 				g.slc.gj.eachLayer(function (ea) {
 					tracks_have.push(String(ea.feature.properties.tract));
-					console.log("!", ea.feature.properties.tract);
 				});
 				response.data.filter(function (ea) {
 					var keyval = Number(ea[dep]);
 					if (tracks_have.indexOf(String(ea.tract)) > -1) {
 						res_vals.push(keyval);
+						res_dic[String(ea.tract)] = keyval;
 						return true;
 					} else {
 						return false;
@@ -174,7 +175,8 @@ function runWeight () {
 
 				g.slc.gj.eachLayer(function (ea) {
 					console.log("!", ea);
-					ea.setStyle({fillColor: "#" + String(rainbow.colourAt(number))})
+					var num = res_dic[String(ea.feature.properties.tract)]
+					ea.setStyle({fillColor: "#" + String(rainbow.colourAt(num))})
 				});
 
 				console.log(res_vals);
