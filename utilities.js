@@ -179,7 +179,13 @@ function runWeight () {
 					var t = String(ea.feature.properties.tract);
 					var num = res_dic[t]
 					ea.setStyle({fillColor: "#" + String(rainbow.colourAt(num))});
-					ea._popup.setContent("<b>Tract " + t + ": </b> " + String(num));
+					if (ea.hasOwnProperty("_popup")) {
+						if (ea._popup.hasOwnProperty("setContent")) {
+							ea._popup.setContent("<b>Tract " + t + ": </b> " + String(num));
+						} else {
+							ea._popup._content = "<b>Tract " + t + ": </b> " + String(num);
+						}
+					}
 				});
 
 				loadDone();
