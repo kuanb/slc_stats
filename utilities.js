@@ -146,9 +146,6 @@ function runWeight () {
 			request.variables.push(dep);
 
 			census.APIRequest(request, function(response) {
-				console.log("response");
-				console.log(response);
-
 				var tracks_have = [],
 						res_vals = [],
 						res_dic = {};
@@ -175,11 +172,13 @@ function runWeight () {
 
 				g.slc.gj.eachLayer(function (ea) {
 					console.log("!", ea);
-					var num = res_dic[String(ea.feature.properties.tract)]
-					ea.setStyle({fillColor: "#" + String(rainbow.colourAt(num))})
+					var t = String(ea.feature.properties.tract);
+					var num = res_dic[t]
+					ea.setStyle({fillColor: "#" + String(rainbow.colourAt(num))});
+					ea._popup.setContent = "<b>Tract " + t + ": </b> " + String(num);
+					console.log("1", ea);
 				});
 
-				console.log(res_vals);
 				loadDone();
 			 });
 		} else {
