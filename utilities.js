@@ -175,7 +175,7 @@ function runWeight () {
 					var t = String(ea.feature.properties.tract);
 					var num = res_dic[t]
 					ea.setStyle({fillColor: "#" + String(rainbow.colourAt(num))});
-					ea._popup.setContent = "<b>Tract " + t + ": </b> " + String(num);
+					ea._popup.setContent("<b>Tract " + t + ": </b> " + String(num));
 					console.log("1", ea);
 				});
 
