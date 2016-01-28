@@ -138,6 +138,12 @@ function runWeight () {
 		"sublevel": true,
 		"variables": []
 	};
+
+	var tracks_have = [];
+	g.slc.gj.eachLayer(function (ea) {
+		tracks_have.push(String(ea.feature.properties.tract));
+	});
+
 	if (dep == "-- select an option --") {
 		runReset(loadDone);
 	} else {
@@ -145,19 +151,18 @@ function runWeight () {
 		if (cor == "-- select an option --") {
 			request.variables.push(dep);
 
-			census.APIRequest(request, function(response) {
-				var tracks_have = [],
-						res_vals = [],
+			census.APIRequest(request, function (response) {
+				var res_vals = [],
 						res_dic = {};
-				g.slc.gj.eachLayer(function (ea) {
-					tracks_have.push(String(ea.feature.properties.tract));
-				});
+
 				response.data.filter(function (ea) {
 					var keyval = Number(ea[dep]);
+
 					if (tracks_have.indexOf(String(ea.tract)) > -1) {
 						res_vals.push(keyval);
 						res_dic[String(ea.tract)] = keyval;
 						return true;
+
 					} else {
 						return false;
 					}
@@ -171,25 +176,95 @@ function runWeight () {
 				rainbow.setNumberRange(min, max);
 
 				g.slc.gj.eachLayer(function (ea) {
-					console.log("!", ea);
 					var t = String(ea.feature.properties.tract);
 					var num = res_dic[t]
 					ea.setStyle({fillColor: "#" + String(rainbow.colourAt(num))});
 					ea._popup.setContent("<b>Tract " + t + ": </b> " + String(num));
-					console.log("1", ea);
 				});
 
 				loadDone();
 			 });
+
+		// comparison results
 		} else {
-			// comparison results
-			loadDone();
+			request.variables.push(dep);
+			request.variables.push(cor);
+
+			// get operator
+			var op = null;
+			if ($("#sel_operator").val().indexOf("Divide") > -1) {
+				op = "/"
+			} else if ($("#sel_operator").val().indexOf("Multiply") > -1) {
+				op = "*"
+			} else if ($("#sel_operator").val().indexOf("Add") > -1) {
+				op = "+"
+			}
+
+			census.APIRequest(request, function (response) {
+
+				console.log("response");
+				console.log(response);
+
+				var res_vals = [],
+						res_dic = {},
+						res_dic_d = {},
+						res_dic_c = {};
+
+				response.data.filter(function (ea) {
+					var keyval_d = Number(ea[dep]);
+					var keyval_c = Number(ea[cor]);
+
+					if (tracks_have.indexOf(String(ea.tract)) > -1) {
+
+						var com;
+						if (["/", "*", "+"].indexOf(op) > -1) { com = eval(keyval_d + op + keyval_c); }
+						else { com = Math.pow(keyval_d, keyval_c); }
+
+						if (isNaN(com)) com = 0;
+						res_vals.push(com);
+						res_dic[String(ea.tract)] = com.toFixed(2);
+
+						if (isNaN(keyval_d)) keyval_d = 0;
+						res_dic_d[String(ea.tract)] = keyval_d.toFixed(2);
+
+						if (isNaN(keyval_c)) keyval_c = 0;
+						res_dic_c[String(ea.tract)] = keyval_c.toFixed(2);
+
+						return true;
+
+					} else {
+						return false;
+					}
+				});
+
+				var max = Array.max(res_vals),
+						min = Array.min(res_vals);
+
+				var rainbow = new Rainbow();
+				rainbow.setSpectrum('#f9c422', '#b60202');
+				rainbow.setNumberRange(min, max);
+
+				g.slc.gj.eachLayer(function (ea) {
+					var t = String(ea.feature.properties.tract);
+					var num = Number(res_dic[t])
+					ea.setStyle({fillColor: "#" + String(rainbow.colourAt(num))});
+
+					ea._popup.setContent("<b>Tract " + t + ": </b><br>Combined: " + String(num) + 
+																"<br>" + String(dep) + ": " + String(res_dic_d[t]) + 
+																"<br>" + String(cor) + ": " + String(res_dic_c[t]));
+				});
+
+				loadDone();
+			 });
 		}
 	}
 };
 
 function runReset (cb) {
-	console.log("reset happened...");
+	g.slc.gj.eachLayer(function (ea) {
+		ea.setStyle({fillColor: "#238CAD"});
+		ea._popup.setContent(ea.feature.properties.popupContent);
+	});
 	if (cb) { cb(); }
 }
 

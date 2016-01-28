@@ -19,7 +19,9 @@
 
 	<body>
 
-		<p id="loadbar" class="loading" style="display:none;"><i class="fa fa-spinner fa-pulse"></i> Loading</p>
+		<div id="loadbar" class="load-splash" style="display:none;">
+			<center><p class="loading"><i class="fa fa-spinner fa-pulse"></i> Loading</p></center>
+		</div>
 
 		<div id="prompt" class="container">
 			<section class="header">
@@ -37,6 +39,14 @@
 				Dependent:
 				<select id="sel_dependent0" class="sel_dependent">
 					<option disabled selected> -- select an option -- </option>
+				</select>
+
+				Operator:
+				<select id="sel_operator" class="sel_dependent">
+					<option valure="divide" selected> Divide (Dependent/Correlation) </option>
+					<option valure="multiply"> Multiply (Dependent*Correlation) </option>
+					<option valure="add"> Add (Dependent+Correlation) </option>
+					<option valure="power"> Raise to Nth Power (Dependent to the power of Correlation) </option>
 				</select>
 
 				Correlation:
@@ -64,8 +74,17 @@
 		};
 
 
+		// check for custom city
+		var custom_check = window.location.search.replace("?lat=", "").split(",");
+		if (custom_check.length == 2 && !isNaN(custom_check[0]) && !isNaN(custom_check[1])) {
+			g.slc.lat = custom_check[0];
+			g.slc.lng = custom_check[1];
+		}
+
 		// leaflet set up
 		$("#map1").height($(window).height());
+		$("#loadbar").height($(window).height());
+		$(".loading").css("padding-top", String(Math.round($(window).height()/2.0) - 20) + "px");
 		var map = L.map("map1", {attributionControl:false}).setView([g.slc.lat, g.slc.lng], 11);
 		map.scrollWheelZoom.disable();
 		setUpTiles(map);
