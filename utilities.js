@@ -1,7 +1,20 @@
 // utilities
+
 String.prototype.capitalize = function() {
 	return this.charAt(0).toUpperCase() + this.slice(1).toLowerCase();
 };
+
+Array.max = function (array) {
+  return Math.max.apply(Math, array);
+};
+
+Array.min = function (array) {
+  return Math.min.apply(Math, array);
+};
+
+
+
+// operations
 
 function loadStart () { 
 	$("#loadbar").show();
@@ -30,8 +43,12 @@ function setUpTiles (map) {
 	L.tileLayer(url, {attribution: ""}).addTo(map);
 };
 
-function loadInVariables () {
-	// body...
+function loadInVariables (acs_vars) {
+	["0", "1"].forEach(function (num) {
+		acs_vars.forEach(function (v) {
+			$("#sel_dependent" + num).append("<option>" + v + "</option>")
+		});
+	});
 }
 
 function setUpCitySDK (key) {
@@ -53,14 +70,12 @@ function onEachFeature (feature, layer) {
 	}
 	layer.on('mouseover', function () {
 		this.setStyle({
-			"fillColor": "#ff0000",
-			"color": "#ff0000",
+			"fillOpacity": 0.70,
 		});
 	});
 	layer.on("mouseout", function () {
 		this.setStyle({
-			"fillColor": "#0000ff",
-			"color": "#0000ff",
+			"fillOpacity": 0.30,
 		});
 	});
 }
@@ -84,19 +99,19 @@ function loadZips () {
 			ea.properties.popupContent = popupContent;
 			return ea;
 		});
-		var gj = L.geoJson(response, {
+		g.slc.gj = L.geoJson(response, {
 			onEachFeature: onEachFeature,
 			style: {
-				"fillColor": "#0000ff",
-				"color": "#0000ff",
-				"weight": 1
+				"fillColor": "#238CAD",
+				"color": "#238CAD",
+				"weight": 1,
+				"fillOpacity": 0.30,
 			}
 		});
-		console.log(gj);
-		gj.addTo(map);
+		g.slc.gj.addTo(map);
 		loadDone();
 	 });
-}
+};
 
 function startTool () {
 	var key = $("#prompt #api_key")[0].value;
@@ -110,4 +125,76 @@ function startTool () {
 	} else {
 		setUpCitySDK(key);
 	}
+};
+
+function runWeight () {
+	loadStart();
+	var dep = $("#sel_dependent0")[0].value;
+	var cor = $("#sel_dependent1")[0].value;
+	var request = {
+		"level": "county",
+		"lat": g.slc.lat,
+		"lng": g.slc.lng,
+		"sublevel": true,
+		"variables": []
+	};
+	if (dep == "-- select an option --") {
+		runReset(loadDone);
+	} else {
+		// only dependent
+		if (cor == "-- select an option --") {
+			request.variables.push(dep);
+
+			census.APIRequest(request, function(response) {
+				console.log("response");
+				console.log(response);
+
+				var tracks_have = [],
+						res_vals = [];
+				g.slc.gj.eachLayer(function (ea) {
+					tracks_have.push(String(ea.feature.properties.tract));
+					console.log("!", ea.feature.properties.tract);
+				});
+				response.data.filter(function (ea) {
+					var keyval = Number(ea[dep]);
+					if (tracks_have.indexOf(String(ea.tract)) > -1) {
+						res_vals.push(keyval);
+						return true;
+					} else {
+						return false;
+					}
+				});
+
+				var max = Array.max(res_vals),
+						min = Array.min(res_vals);
+
+				var rainbow = new Rainbow();
+				rainbow.setSpectrum('#fbb6b6', '#fd2323');
+				rainbow.setNumberRange(min, max);
+
+				g.slc.gj.eachLayer(function (ea) {
+					console.log("!", ea);
+					ea.setStyle({fillColor: "#" + String(rainbow.colourAt(number))})
+				});
+
+				console.log(res_vals);
+				loadDone();
+			 });
+		} else {
+			// comparison results
+			loadDone();
+		}
+	}
+};
+
+function runReset (cb) {
+	console.log("reset happened...");
+	if (cb) { cb(); }
 }
+
+
+
+
+
+
+

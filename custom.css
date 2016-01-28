@@ -123,6 +123,9 @@ body {
 .navbar {
   display: none;
 }
+.sel_dependent {
+  width: 150px;
+}
 
 /* Larger than phone */
 @media (min-width: 550px) {

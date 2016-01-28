@@ -5,6 +5,7 @@
 	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
 	<script src="https://cdn.rawgit.com/uscensusbureau/citysdk/Release1.1/js/citysdk.js"></script>
 	<script src="https://cdn.rawgit.com/uscensusbureau/citysdk/Release1.1/js/citysdk.census.js"></script>
+	<script src="rainbowvis.js"></script>
 	<script src="utilities.js"></script>
 
 	<!-- css -->
@@ -34,14 +35,19 @@
 				<b>Weight by variables  </b>
 
 				Dependent:
-				<select id="sel_dependent1">
+				<select id="sel_dependent0" class="sel_dependent">
 					<option disabled selected> -- select an option -- </option>
 				</select>
 
 				Correlation:
-				<select id="sel_dependent2">
+				<select id="sel_dependent1" class="sel_dependent">
 					<option disabled selected> -- select an option -- </option>
 				</select>
+
+				<span style="float:right;margin-right:20px">
+					<input class="button-primary" type="button" onclick="runWeight()" value="Run" style="color:#98FB98">
+					<input class="button-primary" type="button" onclick="" value="Reset" style="color:#FFB6C1">
+				</span>
 			</div>
 		</div>
 
@@ -63,7 +69,7 @@
 		var map = L.map("map1", {attributionControl:false}).setView([g.slc.lat, g.slc.lng], 11);
 		map.scrollWheelZoom.disable();
 		setUpTiles(map);
-		loadInVariables();
+		loadInVariables(g.slc.acs_vars);
 
 
 
