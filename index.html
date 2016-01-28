@@ -75,7 +75,8 @@
 
 
 		// check for custom city
-		var custom_check = window.location.search.replace("?lat=", "").split(",");
+		var custom_check;
+		custom_check = window.location.search.replace("?lat=", "").replace("?loc=", "").split(",");
 		if (custom_check.length == 2 && !isNaN(custom_check[0]) && !isNaN(custom_check[1])) {
 			g.slc.lat = custom_check[0];
 			g.slc.lng = custom_check[1];
