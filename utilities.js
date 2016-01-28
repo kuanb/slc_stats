@@ -221,7 +221,7 @@ function runWeight () {
 						else { com = Math.pow(keyval_d, keyval_c); }
 
 						if (isNaN(com)) com = 0;
-						res_vals.push(com);
+						if (isFinite(com)) res_vals.push(com);
 						res_dic[String(ea.tract)] = com.toFixed(2);
 
 						if (isNaN(keyval_d)) keyval_d = 0;
@@ -229,6 +229,8 @@ function runWeight () {
 
 						if (isNaN(keyval_c)) keyval_c = 0;
 						res_dic_c[String(ea.tract)] = keyval_c.toFixed(2);
+
+						console.log(com, keyval_d, keyval_c);
 
 						return true;
 
@@ -247,7 +249,13 @@ function runWeight () {
 				g.slc.gj.eachLayer(function (ea) {
 					var t = String(ea.feature.properties.tract);
 					var num = Number(res_dic[t])
-					ea.setStyle({fillColor: "#" + String(rainbow.colourAt(num))});
+					if (isFinite(num)) {
+						ea.setStyle({fillColor: "#" + String(rainbow.colourAt(num))});
+					} else {
+						ea.setStyle({fillColor: "#238CAD"});
+						num = String(num) + " (Operation could not be performed. Results inaccurate.)";
+					}
+					
 
 					ea._popup.setContent("<b>Tract " + t + ": </b><br>Combined: " + String(num) + 
 																"<br>" + String(dep) + ": " + String(res_dic_d[t]) + 
