@@ -262,10 +262,16 @@ function runWeight () {
 						num = String(num) + " (Operation could not be performed. Results inaccurate.)";
 					}
 					
-
-					ea._popup.setContent("<b>Tract " + t + ": </b><br>Combined: " + String(num) + 
-																"<br>" + String(dep) + ": " + String(res_dic_d[t]) + 
-																"<br>" + String(cor) + ": " + String(res_dic_c[t]));
+					var content_for_popup = "<b>Tract " + t + ": </b><br>Combined: " + String(num) + 
+																	"<br>" + String(dep) + ": " + String(res_dic_d[t]) + 
+																	"<br>" + String(cor) + ": " + String(res_dic_c[t])
+					if (ea.hasOwnProperty("_popup")) {
+						if (ea._popup.hasOwnProperty("setContent")) {
+							ea._popup.setContent(content_for_popup);
+						} else {
+							ea._popup._content = content_for_popup;
+						}
+					}
 				});
 
 				loadDone();
