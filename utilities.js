@@ -258,7 +258,7 @@ function runWeight () {
 					if (isFinite(num)) {
 						ea.setStyle({fillColor: "#" + String(rainbow.colourAt(num))});
 					} else {
-						ea.setStyle({fillColor: "#238CAD"});
+						ea.setStyle({fillColor: "#000"});
 						num = String(num) + " (Operation could not be performed. Results inaccurate.)";
 					}
 					
