@@ -189,22 +189,22 @@ function plotHeatmap () {
 	if (g.socrata.plot.length > 0) {
 		if (g.socrata.heat !== null) {
 			map.removeLayer(g.socrata.heat);
+		} else {
+			g.socrata.plot.forEach(function (ea) {
+				map.removeLayer(ea);
+			});
+
+			var heat_array = [];
+			g.socrata.data.forEach(function (ea) {
+				var lat = ea.location.latitude,
+						lng = ea.location.longitude;
+				heat_array.push([lat, lng]);
+			});
+
+			var heat_map = L.heatLayer(heat_array, {radius: 50, blur: 25, maxZoom: 19, max: 0.8});
+			heat_map.addTo(map);
+			g.socrata.heat = heat_map;
 		}
-
-		g.socrata.plot.forEach(function (ea) {
-			map.removeLayer(ea);
-		});
-
-		var heat_array = [];
-		g.socrata.data.forEach(function (ea) {
-			var lat = ea.location.latitude,
-					lng = ea.location.longitude;
-			heat_array.push([lat, lng]);
-		});
-
-		var heat_map = L.heatLayer(heat_array, {radius: 50, blur: 25, maxZoom: 19, max: 0.8});
-		heat_map.addTo(map);
-		g.socrata.heat = heat_map;
 	}
 };
 
