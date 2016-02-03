@@ -5,11 +5,11 @@ String.prototype.capitalize = function() {
 };
 
 Array.max = function (array) {
-  return Math.max.apply(Math, array);
+	return Math.max.apply(Math, array);
 };
 
 Array.min = function (array) {
-  return Math.min.apply(Math, array);
+	return Math.min.apply(Math, array);
 };
 
 
@@ -91,6 +91,7 @@ function loadZips () {
 	};
 
 	census.GEORequest(request, function(response) {
+		console.log("Loaded GEORequest response: ", response);
 		response.features.map(function (ea) {
 			var popupContent = "";
 			Object.keys(ea.properties).forEach(function (k) {
@@ -182,6 +183,29 @@ function plotSocrata () {
 		circle.addTo(map);
 		g.socrata.plot.push(circle);
 	});
+};
+
+function plotHeatmap () {
+	if (g.socrata.plot.length > 0) {
+		if (g.socrata.heat !== null) {
+			map.removeLayer(g.socrata.heat);
+		}
+
+		g.socrata.plot.forEach(function (ea) {
+			map.removeLayer(ea);
+		});
+
+		var heat_array = [];
+		g.socrata.data.forEach(function (ea) {
+			var lat = ea.location.latitude,
+					lng = ea.location.longitude;
+			heat_array.push([lat, lng]);
+		});
+
+		var heat_map = L.heatLayer(heat_array, {radius: 50, blur: 25, maxZoom: 19, max: 0.8});
+		heat_map.addTo(map);
+		g.socrata.heat = heat_map;
+	}
 };
 
 function runWeight () {
