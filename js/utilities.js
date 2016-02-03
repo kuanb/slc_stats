@@ -127,6 +127,63 @@ function startTool () {
 	}
 };
 
+function loadSocrata () {
+	var url = $(".url-entry").val();
+	$.get(url)
+		.fail(function (e) {
+			alert("That endpoint failed to return a result.");
+			$("#socrata-load").fadeIn();
+		})
+		.done(function (r) {
+			g.socrata.data = r;
+			plotSocrata();
+		});
+};
+
+function nestedStringify (j, pad) {
+	var popup_text = "";
+	Object.keys(j).forEach(function (k) {
+		var js_conversion = null;
+		try {
+			js_conversion = JSON.parse(j[k]);
+		} catch (e) {
+			js_conversion = j[k];
+		}
+
+		console.log()
+		if (typeof js_conversion == "object") {
+			popup_text = popup_text + "<b style='padding-left:" + pad + "px'>" + k.capitalize() + ":</b> <br>";
+			popup_text = popup_text + nestedStringify(js_conversion, pad+10);
+		} else {
+			popup_text = popup_text + "<b style='padding-left:" + pad + "px'>" + k.capitalize() + ":</b> " + String(js_conversion) + "<br>";
+		}
+	});
+	return popup_text;
+}
+
+function plotSocrata () {
+	if (g.socrata.plot.length > 0) {
+		g.socrata.plot.forEach(function (ea) {
+			map.removeLayer(ea);
+		});
+	}
+	g.socrata.data.forEach(function (ea) {
+		var lat = ea.location.latitude,
+				lng = ea.location.longitude;
+		var circle = L.circle([lat, lng], 100, {
+			color: "#33C3F0",
+			fillColor: "#053746",
+			fillOpacity: 0.5,
+			weight: 2
+		});
+
+		var popup_text = nestedStringify(ea, 0);
+		circle.bindPopup(popup_text);
+		circle.addTo(map);
+		g.socrata.plot.push(circle);
+	});
+};
+
 function runWeight () {
 	loadStart();
 	var dep = $("#sel_dependent0")[0].value;

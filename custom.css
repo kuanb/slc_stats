@@ -135,6 +135,12 @@ body {
 .sel_dependent {
   width: 150px;
 }
+#socrata-load {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 20px;
+}
 
 /* Larger than phone */
 @media (min-width: 550px) {
