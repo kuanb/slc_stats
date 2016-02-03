@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html>
+	<title>City Data Explorer</title>
+
 	<!-- js libraries -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js"></script>
 	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
@@ -39,9 +41,9 @@
 
 		<div id="prompt" class="container">
 			<section class="header">
-				<h2 class="title">SLC Explorer Tool</h2>
+				<h2 class="title">City Data Explorer</h2>
 				<input type="text" id="api_key" placeholder="Enter CitySDK API Key" style="width:250px;">
-				<input class="button-primary" type="submit" onclick="startTool()" value="Submit">
+				<input class="button-primary" type="submit" onclick="startTool()" value="Submit or Skip">
 			</section>
 		</div>
 
@@ -52,7 +54,7 @@
 
 				Dependent:
 				<select id="sel_dependent0" class="sel_dependent">
-					<option disabled selected> -- select an option -- </option>
+					<option selected> -- select an option -- </option>
 				</select>
 
 				Operator:
@@ -65,7 +67,7 @@
 
 				Correlation:
 				<select id="sel_dependent1" class="sel_dependent">
-					<option disabled selected> -- select an option -- </option>
+					<option selected> -- select an option -- </option>
 				</select>
 
 				<span style="float:right;margin-right:20px">
@@ -124,6 +126,12 @@
 		$("#socrata-entry #socrata-opts").on("mouseenter", function () {
 			if (g.socrata.plot.length > 0) {
 				$("#socrata-opts-list").fadeIn();
+			}
+		});
+
+		$("#socrata-entry #socrata-opts-list").on("mouseleave", function () {
+			if (g.socrata.plot.length > 0) {
+				$("#socrata-opts-list").fadeOut();
 			}
 		});
 

@@ -192,10 +192,6 @@ function plotHeatmap () {
 			map.removeLayer(g.socrata.heat);
 			g.socrata.heat = null;
 		} else {
-			g.socrata.plot.forEach(function (ea) {
-				map.removeLayer(ea);
-			});
-
 			var heat_array = [];
 			g.socrata.data.forEach(function (ea) {
 				var lat = ea.location.latitude,
@@ -206,6 +202,7 @@ function plotHeatmap () {
 			var heat_map = L.heatLayer(heat_array, {radius: 50, blur: 25, maxZoom: 19, max: 0.8});
 			heat_map.addTo(map);
 			g.socrata.heat = heat_map;
+			console.log(heat_map)
 		}
 	}
 };
