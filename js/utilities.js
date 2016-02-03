@@ -189,6 +189,7 @@ function plotHeatmap () {
 	if (g.socrata.plot.length > 0) {
 		if (g.socrata.heat !== null) {
 			map.removeLayer(g.socrata.heat);
+			g.socrata.heat = null;
 		} else {
 			g.socrata.plot.forEach(function (ea) {
 				map.removeLayer(ea);
