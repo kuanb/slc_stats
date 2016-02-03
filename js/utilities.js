@@ -171,10 +171,11 @@ function plotSocrata () {
 	g.socrata.data.forEach(function (ea) {
 		var lat = ea.location.latitude,
 				lng = ea.location.longitude;
-		var circle = L.circle([lat, lng], 100, {
+		var circle = L.circle([lat, lng], 65, {
 			color: "#33C3F0",
 			fillColor: "#053746",
 			fillOpacity: 0.5,
+			opacity: 0.5,
 			weight: 2
 		});
 
