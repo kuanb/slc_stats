@@ -255,7 +255,7 @@ function runWeight () {
 						min = Array.min(res_vals);
 
 				var rainbow = new Rainbow();
-				rainbow.setSpectrum('#f9c422', '#b60202');
+				rainbow.setSpectrum('#fff744', '#7c0000');
 				rainbow.setNumberRange(min, max);
 
 				g.slc.gj.eachLayer(function (ea) {
